@@ -3,6 +3,7 @@ import random
 import time
 import game_framework
 import main_state
+import gameover_state
 
 # 1. 게임 초기화
 pygame.init()
@@ -42,7 +43,7 @@ class obj:
     def put_img(self, address):
         if address[-3:] == "png":
             self.img = pygame.image.load(address).convert_alpha()
-        else :
+        else:
             self.img = pygame.image.load(address)
             self.sx, self.sy = self.img.get_size()
     def change_size(self, sx, sy):
@@ -83,10 +84,10 @@ def enter():
 
 
     # 4. 메인 이벤트
-    SB = 0
+    #SB = 0
 def exit():
     global ss
-    del ss
+    #del ss
 
 def pause():
     pass
@@ -194,8 +195,10 @@ def update():
     for i in range(len(a_list)):
         a = a_list[i]
         if crash(a, ss) == True:
-            SB = 1
-            time.sleep(1)
+            #SB = 1
+            #time.sleep(1)
+            game_framework.change_state(gameover_state)
+
 
 def draw():
     screen.fill(black)
