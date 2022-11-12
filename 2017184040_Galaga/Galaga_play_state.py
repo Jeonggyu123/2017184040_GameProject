@@ -29,8 +29,10 @@ a_list = []
 k = 0
 black = (0, 0, 0)
 white = (255, 255, 255)
-color = (0, 0, 0)  # 검은색RGB
-
+Yellow = (255, 255, 0)
+Green = (0, 255, 0)
+kill = 0
+miss = 0
 
 
 
@@ -64,6 +66,11 @@ def crash(a, b):        #충돌처리함수
     else:
         return False
 
+def Draw_text(screen, text, font, x, y, color):
+    text_obj = font.render(text, True, color)
+    text_rect = text_obj.get_rect()
+    text_rect.center = x, y
+    screen.blit(text_obj, text_rect)
 
 
 
@@ -124,7 +131,8 @@ def handle_events():
 
 
 def update():
-    global k, left_go, right_go, space_go
+    global k, left_go, right_go, space_go, font, text, kill, miss
+
 
     if left_go == True:
         ss.x -= ss.move
@@ -174,6 +182,7 @@ def update():
             d_list.append(i)
     for d in d_list:
         del a_list[d]
+        miss += 1
 
     dm_list = []
     da_list = []
@@ -189,8 +198,9 @@ def update():
 
     for dm in dm_list:
         del m_list[dm]
-    for da in da_list:
+    for da in da_list:      # 우주선 죽였을때
         del a_list[da]
+        kill += 1
 
     for i in range(len(a_list)):
         a = a_list[i]
@@ -198,14 +208,21 @@ def update():
             #SB = 1
             #time.sleep(1)
             game_framework.change_state(gameover_state)
-
-
 def draw():
-    screen.fill(black)
+    global kill, miss, Yellow
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    #screen.fill(black)
+    background_image = pygame.image.load("bg_space.png")
+    screen.blit(background_image, background_image.get_rect())
     ss.show()
     clock.tick(60)
     for m in m_list:
         m.show()
     for a in a_list:
         a.show()
+
+    #font = pygame.font.Font("ARIALNB.TTF", 20)
+    default_font = pygame.font.Font(None, 30)
+    Draw_text(screen, "killed : {} missed : {}".format(kill, miss), default_font, 100, 20, Green)
+    # screen.blit(text, (10, 5))  # 텍스트 위치 잡아주기
     pygame.display.flip()

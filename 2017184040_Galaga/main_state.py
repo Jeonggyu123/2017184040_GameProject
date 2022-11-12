@@ -1,7 +1,7 @@
 import game_framework
 import pygame
 import Galaga_play_state
-import main_state
+#from Galaga_play_state import Draw_text
 
 running = True
 image = None
@@ -44,8 +44,11 @@ def update():
 
 
 def draw():
+    kill, miss = 1, 10
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     screen.blit(image, image.get_rect())
+    # default_font = pygame.font.Font(None, 28)
+    # Draw_text(screen, "killed : [] miss : []".format(kill, miss), default_font, 10, 5, (255, 255, 0))
     pygame.display.flip()
 
 
