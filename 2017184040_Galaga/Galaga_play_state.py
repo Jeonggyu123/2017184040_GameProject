@@ -23,6 +23,8 @@ clock = pygame.time.Clock()
 ss = None
 left_go = False
 right_go = False
+up_go = False
+down_go = False
 space_go = False
 m_list = []  # 초기화 되지 않게 while문 밖으로
 a_list = []
@@ -77,11 +79,11 @@ def Draw_text(screen, text, font, x, y, color):
 def enter():
     global ss, k
     ss = obj()
-    ss.put_img("airplane.png")
+    ss.put_img("airplane1.png")
     ss.change_size(100, 100)
-    ss.x = round(size[0] / 2 - ss.sx / 2)
-    ss.y = size[1] - ss.sy - 5
-    ss.move = 5  # 비행선 이동속도
+    ss.x = round(size[0] / 2 - ss.sx / 2 - 300)
+    ss.y = size[1] - ss.sy - 240
+    ss.move = 5  #비행선 이동속도
     # ss = pygame.image.load("airplane.png").convert_alpha()
     # ss = pygame.transform.scale(ss, (100, 100))
     # ss_sx, ss_sy = ss.get_size()
@@ -101,7 +103,7 @@ def pause():
 def resume():
     pass
 def handle_events():
-    global k, left_go, right_go, space_go
+    global k, left_go, right_go, space_go, up_go, down_go
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -111,8 +113,10 @@ def handle_events():
                 left_go = True
             elif event.key == pygame.K_RIGHT:
                 right_go = True
-       #     elif event.key == pygame.K_UP:
-        #        up_go = True
+            elif event.key == pygame.K_UP:
+                up_go = True
+            elif event.key == pygame.K_DOWN:
+                down_go = True
             elif event.key == pygame.K_SPACE:
                 space_go = True
                 k = 0   #space를 눌렀을 때 끊어짐 방지
@@ -124,16 +128,18 @@ def handle_events():
                 left_go = False
             elif event.key == pygame.K_RIGHT:
                 right_go = False
-          #  elif event.key == pygame.K_UP:
-          #      up_go = False
+            elif event.key == pygame.K_UP:
+                up_go = False
+            elif event.key == pygame.K_DOWN:
+                down_go = False
             elif event.key == pygame.K_SPACE:
                 space_go = False
 
 
 def update():
-    global k, left_go, right_go, space_go, font, text, kill, miss
+    global k, left_go, right_go, space_go, kill, miss
 
-
+    #비행선
     if left_go == True:
         ss.x -= ss.move
         if ss.x <= 0:
@@ -142,43 +148,47 @@ def update():
         ss.x += ss.move
         if ss.x >= size[0] - ss.sx:         #ss.sx : 비행선의 크기
             ss.x = size[0] - ss.sx
-    #elif up_go == True:
-     #   ss.y += ss.move
-      #  if ss.y >= size[0] - ss.sy:         #ss.sx : 비행선의 크기
-       #     ss.y = size[0] - ss.sy
+    elif up_go == True:
+        ss.y -= ss.move
+        if ss.y >= size[0] - ss.sy:         #ss.sx : 비행선의 크기
+            ss.y = size[0] - ss.sy
+    elif down_go == True:
+        ss.y += ss.move
+        if ss.y <= 0:
+            ss.y = 0
 
-
+    #미사일
     if space_go == True and k % 6 == 0:        #미사일 / k 미사일 발생 빈도를 6분의1로 줄이기
         mm = obj()
-        mm.put_img("lazer.png")
-        mm.change_size(30, 30)
-        mm.x = round(ss.x + ss.sx/2 - mm.sx/2)
-        mm.y = ss.y - mm.sy - 10
-        mm.move = 15  # 비행선 이동속도
+        mm.put_img("lazer_blue.png")
+        mm.change_size(150, 40)
+        mm.x = round(ss.x + ss.sx/2 - mm.sx/2)  #+ss.sx/2 #ss.x - mm.sx/2)  #+ss.sx/2
+        mm.y = ss.y - mm.sy + 50
+        mm.move = 12  # 미사일 이동속도
         m_list.append(mm)   #장바구니에 담기
     k += 1
     d_list = []             #미사일 지우기 del사용X
     for i in range(len(m_list)):    # 미사일 이동
         m = m_list[i]
-        m.y -= m.move     #mm.y 미사일의 왼쪽 위
+        m.x += m.move     #mm.y 미사일의 왼쪽 위 x/y
         if m.y <= -m.sy:
             d_list.append(i)
     for d in d_list:
         del m_list[d]
-
-    if random.random() < 0.03 :     #적 랜덤 생성
+    #적
+    if random.random() < 0.02:     #적 랜덤 생성 0.03
         aa = obj()
         aa.put_img("alien1.png")
         aa.change_size(50, 50)
-        aa.x = random.randrange(0, size[0]-aa.sx-round(ss.sx/2))     #randrange : 랜덤 위치제한
-        aa.y = 10
-        aa.move = 1  # 비행선 이동속도
+        aa.y = random.randrange(0, size[0]-aa.sy-round(ss.sy/2))     #randrange : 랜덤 위치제한
+        aa.x = 600                 #10
+        aa.move = -1  # 비행선 이동속도#5
         a_list.append(aa)
     d_list = []
     for i in range(len(a_list)):    #
         a = a_list[i]
-        a.y += a.move     #
-        if a.y >= size[1]:        #화면밖으로 나갔다면
+        a.x += a.move     #
+        if a.x >= size[1]+round(ss.sy):        #화면밖으로 나갔다면
             d_list.append(i)
     for d in d_list:
         del a_list[d]
