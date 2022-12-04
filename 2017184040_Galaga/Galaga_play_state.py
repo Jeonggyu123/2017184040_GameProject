@@ -4,6 +4,7 @@ import time
 import game_framework
 import main_state
 import gameover_state
+import Clearstate
 
 # 1. 게임 초기화
 pygame.init()
@@ -158,7 +159,7 @@ def update():
             ss.y = 0
 
     #미사일
-    if space_go == True and k % 6 == 0:        #미사일 / k 미사일 발생 빈도를 6분의1로 줄이기
+    if space_go == True and k % 12 == 0:        #미사일 / k 미사일 발생 빈도를 6분의1로 줄이기
         mm = obj()
         mm.put_img("lazer_blue.png")
         mm.change_size(150, 40)
@@ -180,15 +181,15 @@ def update():
         aa = obj()
         aa.put_img("alien1.png")
         aa.change_size(50, 50)
-        aa.y = random.randrange(0, size[0]-aa.sy-round(ss.sy/2))     #randrange : 랜덤 위치제한
-        aa.x = 600                 #10
-        aa.move = -1  # 비행선 이동속도#5
+        aa.y = random.randrange(0, size[0]-aa.sy-round(ss.sy) - ss.sy)     #randrange : 랜덤 위치제한
+        aa.x = 700            #10
+        aa.move = -2  # 비행선 이동속도#5
         a_list.append(aa)
     d_list = []
     for i in range(len(a_list)):    #
         a = a_list[i]
         a.x += a.move     #
-        if a.x >= size[1]+round(ss.sy):        #화면밖으로 나갔다면
+        if a.x >= size[1]+round(ss.sx):        #화면밖으로 나갔다면
             d_list.append(i)
     for d in d_list:
         del a_list[d]
@@ -211,6 +212,10 @@ def update():
     for da in da_list:      # 우주선 죽였을때
         del a_list[da]
         kill += 1
+
+    if kill == 30:
+        game_framework.change_state(Clearstate)
+
 
     for i in range(len(a_list)):
         a = a_list[i]
